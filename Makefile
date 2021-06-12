@@ -37,7 +37,7 @@ HOST  = $(shell $(CC) -dumpmachine | sed "s/\(-\).*$$//")
 ARCH := $(shell $(CC) -dumpmachine | sed "s/\(-\).*$$//")
 
 ifeq ($(ARCH),x86_64)
-	LIBDIR=/usr/lib64
+	LIBDIR=/usr/lib
 	FORMAT=efi-app-x86-64
 else
 	ARCH=ia32

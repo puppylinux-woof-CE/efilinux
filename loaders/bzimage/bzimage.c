@@ -181,7 +181,7 @@ load_kernel(EFI_HANDLE image, CHAR16 *name, char *_cmdline)
 	EFI_MEMORY_DESCRIPTOR *map_buf;
 	EFI_LOADED_IMAGE *info = NULL;
 	struct e820_entry *e820_map;
-	UINT64 setup_sz, init_size;
+	UINT64 setup_sz, init_size, base;
 	struct boot_params *buf;
 	struct efi_info *efi;
 	UINT32 desc_version;
@@ -353,9 +353,10 @@ load_kernel(EFI_HANDLE image, CHAR16 *name, char *_cmdline)
 	if (err != EFI_SUCCESS)
 		goto out;
 
-	err = emalloc(gdt.limit, 8, (EFI_PHYSICAL_ADDRESS *)&gdt.base);
+	err = emalloc(gdt.limit, 8, (EFI_PHYSICAL_ADDRESS *)&base);
 	if (err != EFI_SUCCESS)
 		goto out;
+	gdt.base = (UINT64 *)base;
 
 	memset((char *)gdt.base, 0x0, gdt.limit);
 
