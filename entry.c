@@ -334,18 +334,18 @@ read_config_file(EFI_LOADED_IMAGE *image, CHAR16 **options,
 	 */
 
 	/* Make sure we don't overflow the UINT32 */
-	if (size > 0xffffffff || (size * 2) > 0xffffffff ) {
+	if (size >= 0xffffffff || (size * 2) >= 0xffffffff ) {
 		Print(L"Config file size too large. Ignoring.\n");
 		goto fail;
 	}
 
-	a_buf = malloc((UINTN)size);
+	a_buf = malloc((UINTN)size + 1);
 	if (!a_buf) {
 		Print(L"Failed to alloc buffer %d bytes\n", size);
 		goto fail;
 	}
 
-	u_buf = malloc((UINTN)size * 2);
+	u_buf = malloc((UINTN)size * 2 + 1);
 	if (!u_buf) {
 		Print(L"Failed to alloc buffer %d bytes\n", size);
 		free(a_buf);
@@ -368,11 +368,11 @@ read_config_file(EFI_LOADED_IMAGE *image, CHAR16 **options,
 		*p++ = '\0';
 
 	if (i == size && *p) {
-		Print(L"Error: missing newline at end of config file?\n");
-		goto fail;
+		Print(L"Warning: missing newline at end of config file?\n");
+		*p = '\0';
+		++size;
 	}
-
-	if ((p - a_buf) < size)
+	else if ((p - a_buf) < size)
 		Print(L"Warning: config file contains multiple lines?\n");
 
 	p = a_buf;
